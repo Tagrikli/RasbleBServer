@@ -1,8 +1,8 @@
 
 import dbus
 import dbus.service
-from consts import IFACE
-from device import Device
+from utils.consts import IFACE
+from .device import Device
 
 
 
@@ -15,9 +15,10 @@ def requestPasskey():
 
 class Agent(dbus.service.Object):
 
-    def __init__(self, bus=None, object_path=None, bus_name=None):
+    def __init__(self, bus, object_path, bus_name, cb_request_confirmation):
         self.bus = bus
         self.device = None
+        self.cb_request_confirmation = cb_request_confirmation
         super().__init__(bus, object_path, bus_name)
 
     def updateDevice(self,device):
@@ -36,7 +37,7 @@ class Agent(dbus.service.Object):
 
     @dbus.service.method(IFACE.AGENT,in_signature='os')
     def DisplayPinCode(self,device,pincode):
-        print(pincode)
+        pass
 
     @dbus.service.method(IFACE.AGENT,in_signature='o',out_signature='u')
     def RequestPasskey(self,device):
@@ -44,16 +45,15 @@ class Agent(dbus.service.Object):
 
     @dbus.service.method(IFACE.AGENT,in_signature='ouq')
     def DisplayPasskey(self,device,passkey,entered):
-        print(passkey,entered)
+        pass
 
     @dbus.service.method(IFACE.AGENT,in_signature='ou')
     def RequestConfirmation(self,device,passkey):
-        print(device,passkey)
-        self.updateDevice(device)
+        self.cb_request_confirmation(device,passkey)
 
     @dbus.service.method(IFACE.AGENT,in_signature='o')
     def RequestAuthorization(self,device):
-        self.updateDevice(device)
+        pass
 
     @dbus.service.method(IFACE.AGENT,in_signature='os')
     def AuthorizeService(self,device,uuid):
@@ -62,3 +62,4 @@ class Agent(dbus.service.Object):
     @dbus.service.method(IFACE.AGENT)
     def Cancel(self):
         print("Cancelled")
+

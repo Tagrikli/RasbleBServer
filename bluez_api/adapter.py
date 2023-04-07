@@ -1,5 +1,4 @@
-from dbus_properties import Properties
-
+from .dbus_properties import Properties
 
 
 class Adapter(Properties):
